@@ -1,0 +1,184 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visão ESG | Gestão de Impacto</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #0f172a; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+    </style>
+</head>
+<body class="bg-slate-900 text-gray-200 font-sans min-h-screen flex flex-col">
+
+    <header class="bg-slate-950 border-b border-slate-800 p-6 flex justify-between items-center shadow-md">
+        <div class="flex items-center gap-3">
+            <div class="bg-emerald-500 text-black w-10 h-10 rounded flex items-center justify-center font-black text-xl">
+                <i class="fa-solid fa-leaf"></i>
+            </div>
+            <div>
+                <h1 class="font-black text-xl text-white tracking-tight">Visão ESG</h1>
+                <p class="text-[10px] text-emerald-400 font-black uppercase tracking-widest">Gestão de Impacto</p>
+            </div>
+        </div>
+        
+        <div class="flex items-center gap-4">
+            <a href="{% url 'index' %}" class="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded text-sm font-bold transition border border-slate-700">
+                <i class="fa-solid fa-house mr-1"></i> Site
+            </a>
+            <form action="{% url 'logout_direto' %}" method="post" class="m-0">
+                {% csrf_token %}
+                <button type="submit" class="bg-red-600 hover:bg-red-500 text-white px-5 py-2 rounded text-sm font-bold transition shadow-lg flex items-center gap-2">
+                    Sair <i class="fa-solid fa-right-from-bracket"></i>
+                </button>
+            </form>
+        </div>
+    </header>
+
+    <main class="p-6 max-w-7xl mx-auto w-full flex-grow flex flex-col gap-6">
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-blue-900/30 border border-blue-800/50 rounded-xl p-6 shadow-lg flex items-center justify-between">
+                <div>
+                    <h2 class="text-xs text-blue-300 font-black uppercase tracking-widest mb-1">Água Preservada</h2>
+                    <p class="text-3xl font-black text-white">{{ agua_preservada|floatformat:1 }}<span class="text-sm text-blue-200/50 ml-1">L</span></p>
+                    <p class="text-[10px] text-gray-400 mt-2">Equivalente ao impacto das coletas concluídas.</p>
+                </div>
+                <i class="fa-solid fa-droplet text-blue-500/20 text-6xl"></i>
+            </div>
+            
+            <div class="bg-emerald-900/30 border border-emerald-800/50 rounded-xl p-6 shadow-lg flex items-center justify-between">
+                <div>
+                    <h2 class="text-xs text-emerald-300 font-black uppercase tracking-widest mb-1">CO2 Evitado</h2>
+                    <p class="text-3xl font-black text-white">{{ co2_evitado|floatformat:1 }}<span class="text-sm text-emerald-200/50 ml-1">kg</span></p>
+                    <p class="text-[10px] text-gray-400 mt-2">Emissões de carbono não geradas.</p>
+                </div>
+                <i class="fa-solid fa-cloud text-emerald-500/20 text-6xl"></i>
+            </div>
+
+            <div class="bg-amber-900/30 border border-amber-800/50 rounded-xl p-6 shadow-lg flex items-center justify-between">
+                <div>
+                    <h2 class="text-xs text-amber-300 font-black uppercase tracking-widest mb-1">Itens Processados</h2>
+                    <p class="text-3xl font-black text-white">{{ coletas_concluidas }} / {{ total_coletas }}</p>
+                    <p class="text-[10px] text-gray-400 mt-2">Coletas concluídas vs Registradas.</p>
+                </div>
+                <i class="fa-solid fa-recycle text-amber-500/20 text-6xl"></i>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 h-80">
+            <div class="lg:col-span-2 bg-slate-800/50 border border-slate-700 rounded-xl p-5 shadow-lg flex flex-col">
+                <h3 class="text-sm font-black text-emerald-400 mb-4 flex items-center gap-2"><i class="fa-solid fa-chart-line"></i> Evolução de Coletas (últimos 6 meses)</h3>
+                <div class="flex-grow relative w-full h-full">
+                    <canvas id="barChart"></canvas>
+                </div>
+            </div>
+
+            <div class="bg-slate-800/50 border border-slate-700 rounded-xl p-5 shadow-lg flex flex-col items-center">
+                <h3 class="text-sm font-black text-blue-400 w-full mb-2 flex items-center gap-2"><i class="fa-solid fa-chart-pie"></i> Distribuição de Impacto</h3>
+                <div class="relative w-48 h-48 mt-4">
+                    <canvas id="pieChart"></canvas>
+                </div>
+                <p class="text-[10px] text-gray-400 mt-6 text-center">Proporção visual de Coletas vs Impacto gerado no ecossistema.</p>
+            </div>
+        </div>
+
+        <div class="bg-slate-800/50 border border-slate-700 rounded-xl p-6 shadow-lg mb-8">
+            <h3 class="text-sm font-black text-yellow-400 mb-6 flex items-center gap-2"><i class="fa-solid fa-bullseye"></i> Progresso das Metas ESG</h3>
+            
+            <div class="space-y-6">
+                <div>
+                    <div class="flex justify-between text-xs font-bold text-gray-300 mb-2">
+                        <span>Meta de Água Preservada (1.000 L)</span>
+                        <span class="text-blue-400">{{ agua_preservada|floatformat:0 }} / 1000 L</span>
+                    </div>
+                    <div class="w-full bg-slate-900 rounded-full h-2.5">
+                        <div class="bg-blue-500 h-2.5 rounded-full" style="width: {% widthratio agua_preservada 1000 100 %}%; max-width: 100%;"></div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="flex justify-between text-xs font-bold text-gray-300 mb-2">
+                        <span>Meta de CO₂ Evitado (50 kg)</span>
+                        <span class="text-emerald-400">{{ co2_evitado|floatformat:1 }} / 50 kg</span>
+                    </div>
+                    <div class="w-full bg-slate-900 rounded-full h-2.5">
+                        <div class="bg-emerald-500 h-2.5 rounded-full" style="width: {% widthratio co2_evitado 50 100 %}%; max-width: 100%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Puxando os dados Reais do Django
+            const dadosMeses = JSON.parse('{{ dados_meses|safe }}');
+            
+            // 1. Configuração do Gráfico de Barras
+            const ctxBar = document.getElementById('barChart').getContext('2d');
+            new Chart(ctxBar, {
+                type: 'bar',
+                data: {
+                    labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
+                    datasets: [{
+                        label: 'Coletas Cadastradas',
+                        data: dadosMeses, // Lendo a variável real!
+                        backgroundColor: '#34d399', // Emerald-400
+                        borderRadius: 4,
+                        barThickness: 30
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { 
+                            beginAtZero: true, 
+                            grid: { color: '#334155', drawBorder: false }, // Slate-700
+                            ticks: { color: '#94a3b8', stepSize: 1 } // Slate-400
+                        },
+                        x: { 
+                            grid: { display: false },
+                            ticks: { color: '#94a3b8' }
+                        }
+                    }
+                }
+            });
+
+            // 2. Configuração do Gráfico de Pizza
+            // Usamos logaritmo ou divisores simples para a pizza não ficar com uma fatia gigante de água esmagando as outras
+            const ctxPie = document.getElementById('pieChart').getContext('2d');
+            const totalColetas = {{ total_coletas }};
+            
+            new Chart(ctxPie, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Água (Unidades/L)', 'CO2 (Unidades/Kg)', 'Itens'],
+                    datasets: [{
+                        // Valores simulados graficamente baseados na proporção da coleta
+                        data: [totalColetas * 5, totalColetas * 3, totalColetas * 2], 
+                        backgroundColor: ['#3b82f6', '#10b981', '#f59e0b'],
+                        borderWidth: 0,
+                        cutout: '60%'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

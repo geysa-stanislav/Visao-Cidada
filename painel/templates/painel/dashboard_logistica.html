@@ -1,0 +1,184 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Visão Logística | Operação</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #000; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+    </style>
+</head>
+<body class="bg-black min-h-screen text-gray-200 font-sans flex flex-col selection:bg-yellow-500 selection:text-black">
+
+    <header class="bg-gray-900 border-b border-gray-800 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="bg-yellow-500 text-black w-10 h-10 rounded flex items-center justify-center font-black text-xl">
+                    <i class="fa-solid fa-truck-fast"></i>
+                </div>
+                <div>
+                    <h1 class="font-black text-xl text-white tracking-tight">Visão Logística</h1>
+                    <p class="text-[10px] text-yellow-500 font-black uppercase tracking-widest">Painel do Coletor</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-4">
+    <a href="{% url 'index' %}" class="bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded text-sm font-bold transition border border-gray-700">
+        <i class="fa-solid fa-house"></i> Site
+    </a>
+    <form method="post" action="{% url 'logout_direto' %}" class="m-0">
+        {% csrf_token %}
+        <button type="submit" class="bg-red-600 hover:bg-red-500 text-white px-4 py-2 rounded text-sm font-bold transition">
+            Sair <i class="fa-solid fa-right-from-bracket ml-1"></i>
+        </button>
+    </form>
+</div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-8 w-full flex-grow flex flex-col gap-8">
+        
+        {% if messages %}
+            {% for message in messages %}
+                <div class="bg-green-500/20 border border-green-500 text-green-400 p-4 rounded-lg font-bold text-center">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-gray-900 rounded-xl p-6 border border-gray-800 flex items-center gap-5">
+                <div class="bg-blue-600/20 text-blue-500 w-12 h-12 rounded-full flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-route"></i>
+                </div>
+                <div>
+                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Fila Pendente</p>
+                    <h3 class="text-3xl font-black text-white">{{ reportes|length }}</h3>
+                </div>
+            </div>
+
+            <div class="bg-gray-900 rounded-xl p-6 border border-gray-800 flex items-center gap-5">
+                <div class="bg-green-600/20 text-green-500 w-12 h-12 rounded-full flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-hand-holding-droplet"></i>
+                </div>
+                <div>
+                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Água Salva</p>
+                    <h3 class="text-3xl font-black text-white">{{ agua_preservada }}<span class="text-sm ml-1 text-gray-500">L</span></h3>
+                </div>
+            </div>
+
+            <div class="bg-gray-900 rounded-xl p-6 border border-gray-800 flex items-center gap-5">
+                <div class="bg-yellow-600/20 text-yellow-500 w-12 h-12 rounded-full flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-smog"></i>
+                </div>
+                <div>
+                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">CO2 Evitado</p>
+                    <h3 class="text-3xl font-black text-white">{{ co2_evitado }}<span class="text-sm ml-1 text-gray-500">kg</span></h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 h-[600px]">
+            
+            <div class="lg:col-span-2 bg-gray-900 rounded-xl border border-gray-800 flex flex-col overflow-hidden">
+                <div class="p-4 border-b border-gray-800 flex justify-between items-center">
+                    <h2 class="font-black text-white flex items-center gap-2">
+                        <i class="fa-solid fa-map-location-dot text-blue-500"></i> Roteiro de Retirada
+                    </h2>
+                </div>
+                <div id="mapa-logistica" class="w-full flex-grow bg-black z-0"></div>
+            </div>
+
+            <div class="bg-gray-900 rounded-xl border border-gray-800 flex flex-col overflow-hidden">
+                <div class="p-4 border-b border-gray-800">
+                    <h2 class="font-black text-white flex items-center gap-2">
+                        <i class="fa-solid fa-list-check text-yellow-500"></i> Operação Atual
+                    </h2>
+                </div>
+                
+                <div class="p-4 overflow-y-auto custom-scrollbar flex-grow space-y-4">
+                    {% for rep in reportes %}
+                    <div class="bg-black p-5 rounded-lg border border-gray-800 hover:border-gray-600 transition">
+                        
+                        <div class="flex justify-between items-start mb-3">
+                            <span class="text-[10px] font-black bg-yellow-500/10 text-yellow-500 px-2 py-1 rounded uppercase tracking-wider">
+                                {{ rep.status }}
+                            </span>
+                        </div>
+                        
+                        <h4 class="font-black text-white text-base mb-2">{{ rep.endereco }}</h4>
+                        
+                        <p class="text-xs text-gray-400 font-bold mb-4 line-clamp-3">
+                            <i class="fa-solid fa-robot text-gray-600 mr-1"></i> 
+                            {{ rep.analise_ia|default:"Aguardando análise..." }}
+                        </p>
+
+                        <form method="POST">
+                            {% csrf_token %}
+                            <input type="hidden" name="reporte_id" value="{{ rep.id }}">
+                            <button type="submit" class="w-full bg-green-600 hover:bg-green-500 text-white font-black text-xs py-3 rounded transition uppercase tracking-widest">
+                                <i class="fa-solid fa-check mr-1"></i> Concluir Coleta
+                            </button>
+                        </form>
+                        
+                    </div>
+                    {% empty %}
+                    <div class="flex flex-col items-center justify-center h-full text-gray-600">
+                        <i class="fa-solid fa-mug-hot text-4xl mb-3"></i>
+                        <p class="font-black text-sm uppercase tracking-widest">Fila Limpa</p>
+                        <p class="text-xs font-bold">Nenhuma coleta no momento.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const map = L.map('mapa-logistica').setView([-20.4697, -54.6201], 12); 
+            
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; CartoDB',
+                maxZoom: 19
+            }).addTo(map);
+
+            const markerIcon = L.divIcon({
+                className: 'custom-marker',
+                html: `<div class="bg-yellow-500 w-4 h-4 rounded-full border-2 border-black"></div>`,
+                iconSize: [16, 16],
+                iconAnchor: [8, 8]
+            });
+
+            let bounds = [];
+
+            {% for rep in reportes %}
+                {% if rep.latitude and rep.longitude %}
+                    L.marker([{{ rep.latitude|stringformat:"f" }}, {{ rep.longitude|stringformat:"f" }}], {icon: markerIcon})
+                     .addTo(map)
+                     .bindPopup(`
+                        <div class="text-black font-sans p-1">
+                            <h4 class="font-black text-sm mb-1">Ponto de Retirada</h4>
+                            <p class="text-xs font-bold">${"{{ rep.endereco }}".replace(/(<([^>]+)>)/gi, "")}</p>
+                        </div>
+                     `);
+                    bounds.push([{{ rep.latitude|stringformat:"f" }}, {{ rep.longitude|stringformat:"f" }}]);
+                {% endif %}
+            {% endfor %}
+
+            if (bounds.length > 0) {
+                map.fitBounds(bounds, {padding: [50, 50]});
+            }
+        });
+    </script>
+</body>
+</html>
