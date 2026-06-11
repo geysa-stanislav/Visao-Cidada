@@ -15,8 +15,8 @@
                 extend: {
                     colors: {
                         acolhe: {
-                            navy: '#1e3a8a',    
-                            yellow: '#fbbf24',  
+                            navy: '#1e3a8a',
+                            yellow: '#fbbf24',
                             green: '#15803d',
                             orange: '#f97316'
                         }
@@ -30,7 +30,7 @@
     </script>
     <style>
         .bg-site-total {
-            background-image: url("{% static 'painel/images/fundo_acolhe_topo.jpg' %}"); 
+            background-image: url("{% static 'painel/images/fundo_acolhe_topo.jpg' %}");
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -38,30 +38,6 @@
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #059669; border-radius: 4px; }
-        
-        /* Ajustes para Celular (Responsividade) */
-        @media (max-width: 768px) {
-            h1, h2, h3 { 
-                font-size: 1.5rem !important; 
-                line-height: 1.2 !important;
-            }
-            p {
-                font-size: 1rem !important;
-            }
-            .container, .carrossel-inner {
-                padding-left: 15px !important;
-                padding-right: 15px !important;
-            }
-        }
-
-        /* Ajuste de Cores (Fundo mais vivo) */
-        .bg-light, .bg-secondary, .text-muted, .caixa-cinza {
-            background-color: #d4edda !important; 
-            color: #155724 !important; 
-            border: 2px solid #28a745 !important; 
-            border-radius: 8px !important;
-            font-weight: bold !important;
-        }
     </style>
 </head>
 <body class="bg-site-total min-h-screen text-gray-900 font-sans antialiased flex flex-col">
@@ -78,7 +54,6 @@
                     <span class="font-bold text-base text-gray-800 ml-2 border-l-2 border-gray-500 pl-2 hidden md:inline">Recicla & Educa</span>
                 </h1>
             </div>
-            
             <div class="flex items-center gap-4 text-sm font-bold bg-white/50 backdrop-blur-sm p-2 rounded-full px-4 border border-white/60 shadow-sm">
                 <a href="/dashboard/" class="bg-blue-800 text-white px-6 py-2 rounded-full hover:bg-blue-900 transition flex items-center gap-2">
                     <i class="fa-solid fa-chart-line"></i> Painel de Controle
@@ -89,58 +64,59 @@
 
     <main class="max-w-7xl mx-auto px-6 pb-12 space-y-12 flex-grow w-full mt-6">
 
-        <section class="relative bg-gradient-to-br from-green-900 to-green-950 p-8 md:p-10 rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-green-700 backdrop-blur-md overflow-hidden min-h-[350px] flex items-center transition-all duration-500 group">
-            <div class="w-full md:w-3/5 relative z-20 min-h-[220px] overflow-hidden pb-10">
+        <!-- ✅ CARROSSEL — responsividade mobile corrigida aqui -->
+        <section class="relative bg-gradient-to-br from-green-900 to-green-950 p-5 sm:p-8 md:p-10 rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-green-700 backdrop-blur-md overflow-hidden min-h-[200px] md:min-h-[350px] flex items-center transition-all duration-500 group">
+            <div class="w-full md:w-3/5 relative z-20 min-h-[160px] md:min-h-[220px] overflow-hidden pb-10">
                 <div id="carousel-inner" class="flex transition-transform duration-700 ease-in-out h-full items-center">
                     {% for slide in slides %}
-                    <div class="w-full flex-shrink-0 pr-4 flex flex-col justify-center">
-                        <div class="flex items-center gap-5 md:gap-6 mb-5">
+                    <div class="w-full flex-shrink-0 pr-2 md:pr-4 flex flex-col justify-center">
+                        <div class="flex items-center gap-3 md:gap-6 mb-3 md:mb-5">
                             {% if slide.icone %}
-                            <div class="w-16 h-16 md:w-20 md:h-20 bg-white rounded-full flex items-center justify-center flex-shrink-0 shadow-[0_5px_15px_rgba(0,0,0,0.4)] border-4 border-green-800/50 overflow-hidden p-1">
+                            <div class="w-12 h-12 md:w-20 md:h-20 bg-white rounded-full flex items-center justify-center flex-shrink-0 shadow-[0_5px_15px_rgba(0,0,0,0.4)] border-4 border-green-800/50 overflow-hidden p-1">
                                 <img src="{{ slide.icone.url }}" alt="Ícone" class="w-full h-full object-contain">
                             </div>
                             {% endif %}
-                            <h2 class="text-3xl md:text-4xl lg:text-5xl font-black text-white leading-tight drop-shadow-md">{{ slide.titulo }}</h2>
+                            <h2 class="text-xl sm:text-2xl md:text-4xl lg:text-5xl font-black text-white leading-tight drop-shadow-md">{{ slide.titulo }}</h2>
                         </div>
                         {% if slide.dado_numerico %}
-                            <span class="inline-block bg-yellow-400 text-green-950 px-6 py-1.5 rounded-full text-lg font-black mb-4 shadow-lg w-max border-2 border-yellow-300">
+                            <span class="inline-block bg-yellow-400 text-green-950 px-4 py-1 md:px-6 md:py-1.5 rounded-full text-sm md:text-lg font-black mb-3 md:mb-4 shadow-lg w-max border-2 border-yellow-300">
                                 {{ slide.dado_numerico }}
                             </span>
                         {% endif %}
                         {% if slide.texto %}
-                            <p class="text-lg md:text-xl font-bold text-green-50 leading-relaxed">{{ slide.texto }}</p>
+                            <p class="text-sm md:text-xl font-bold text-green-50 leading-relaxed">{{ slide.texto }}</p>
                         {% endif %}
                     </div>
                     {% empty %}
-                    <div class="w-full flex-shrink-0 pr-4 flex flex-col justify-center">
-                        <h2 class="text-3xl md:text-4xl lg:text-5xl font-black text-white leading-tight drop-shadow-md mb-4">Cuidar da cidade é papel de todos.</h2>
-                        <p class="text-lg md:text-xl font-bold text-green-50 leading-relaxed">Mapeie o descarte irregular e faça sua parte.</p>
+                    <div class="w-full flex-shrink-0 pr-2 md:pr-4 flex flex-col justify-center">
+                        <h2 class="text-xl sm:text-2xl md:text-4xl lg:text-5xl font-black text-white leading-tight drop-shadow-md mb-3 md:mb-4">Cuidar da cidade é papel de todos.</h2>
+                        <p class="text-sm md:text-xl font-bold text-green-50 leading-relaxed">Mapeie o descarte irregular e faça sua parte.</p>
                     </div>
                     {% endfor %}
                 </div>
 
                 {% if slides|length > 1 %}
                 <div class="flex items-center gap-3 absolute bottom-0 left-0">
-                    <button onclick="prevSlide()" class="bg-white/10 hover:bg-white/20 text-white w-10 h-10 rounded-full flex items-center justify-center transition-all focus:outline-none z-30 shadow-sm border border-white/20 backdrop-blur-md">
-                        <i class="fa-solid fa-chevron-left text-sm"></i>
+                    <button onclick="prevSlide()" class="bg-white/10 hover:bg-white/20 text-white w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all focus:outline-none z-30 shadow-sm border border-white/20 backdrop-blur-md">
+                        <i class="fa-solid fa-chevron-left text-xs md:text-sm"></i>
                     </button>
                     <div class="flex gap-2 mx-3 z-30">
                         {% for slide in slides %}
-                        <button onclick="goToSlide({{ forloop.counter0 }})" class="w-3 h-3 rounded-full bg-white/30 hover:bg-white transition-all carousel-dot shadow-sm"></button>
+                        <button onclick="goToSlide({{ forloop.counter0 }})" class="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-white/30 hover:bg-white transition-all carousel-dot shadow-sm"></button>
                         {% endfor %}
                     </div>
-                    <button onclick="nextSlide()" class="bg-white/10 hover:bg-white/20 text-white w-10 h-10 rounded-full flex items-center justify-center transition-all focus:outline-none z-30 shadow-sm border border-white/20 backdrop-blur-md">
-                        <i class="fa-solid fa-chevron-right text-sm"></i>
+                    <button onclick="nextSlide()" class="bg-white/10 hover:bg-white/20 text-white w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all focus:outline-none z-30 shadow-sm border border-white/20 backdrop-blur-md">
+                        <i class="fa-solid fa-chevron-right text-xs md:text-sm"></i>
                     </button>
                 </div>
                 {% endif %}
             </div>
 
-            <div class="absolute -bottom-4 -right-4 h-[110%] z-30 pointer-events-none drop-shadow-[0_15px_25px_rgba(0,0,0,0.5)] hidden md:block">
-                <img src="{% static 'painel/images/rani_sticker.png' %}" alt="Rani Mascote" class="h-full object-contain" onerror="this.style.display='none';">
+            <div class="absolute -bottom-4 -right-4 h-[80%] md:h-[110%] z-30 pointer-events-none drop-shadow-[0_15px_25px_rgba(0,0,0,0.5)]">
             </div>
         </section>
 
+        <!-- REPORTE AMBIENTAL -->
         <section class="bg-white/80 backdrop-blur-md p-8 md:p-10 rounded-[2.5rem] shadow-xl border-2 border-white/60">
             <div class="inline-flex items-center gap-3 mb-10 border-b-4 border-acolhe-green/40 pb-4">
                 <i class="fa-solid fa-camera-retro text-acolhe-green text-4xl drop-shadow-sm"></i>
@@ -175,7 +151,7 @@
                             </div>
                         </li>
                     </ul>
-                    
+
                     <div class="mt-8 bg-green-100 p-6 rounded-3xl border-2 border-green-500 shadow-lg flex items-center gap-5 transition hover:scale-105">
                         <div class="bg-yellow-500 w-14 h-14 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm border-2 border-white">
                             <i class="fa-solid fa-lightbulb text-white text-2xl"></i>
@@ -196,14 +172,14 @@
                             </div>
                         {% endfor %}
                     {% endif %}
-                    
+
                     <div>
                         <label class="block text-acolhe-navy font-black text-lg mb-2">Qual a natureza deste reporte?</label>
                         <select name="tipo_reporte" class="w-full border-2 border-green-600 text-acolhe-navy text-base font-bold rounded-xl p-4 bg-white shadow-sm hover:border-green-800 focus:border-green-700 focus:ring-4 focus:ring-green-500/30 transition cursor-pointer" required>
                             <option value="" disabled selected>Selecione uma opção...</option>
                             <option value="DENUNCIA">⚠️ Foco de Problema (Denúncia de Irregularidade)</option>
-                            <option value="ECOPONTO">♻️ Descarte em Ecoponto </option>
-                            <option value="DRIVE_THRU">🚗 Ação Drive-Thru da Sustentabilidade </option>
+                            <option value="ECOPONTO">♻️ Descarte em Ecoponto</option>
+                            <option value="DRIVE_THRU">🚗 Ação Drive-Thru da Sustentabilidade</option>
                         </select>
                     </div>
 
@@ -231,16 +207,17 @@
             </div>
         </section>
 
+        <!-- MAPA E ALERTAS -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-12">
             <div class="lg:col-span-2 bg-green-100 p-6 rounded-3xl border border-green-300 shadow-xl flex flex-col">
-                <h3 class="text-2xl font-black text-green-900 mb-4"><i class="fa-solid fa-map-location-dot text-blue-700 mr-2"></i> Mapa de Ocorrências e Previsões</h3>
+                <h3 class="text-2xl font-black text-green-900 mb-4"><i class="fa-solid fa-map-location-dot text-green-700 mr-2"></i> Mapa de Ocorrências e Previsões</h3>
                 <div id="mapa" class="w-full h-[350px] rounded-xl z-0 border border-green-400 shadow-inner"></div>
                 <div class="flex justify-between items-center mt-3 text-xs font-bold tracking-wide text-green-800">
                     <span><i class="fa-solid fa-circle text-green-600 mr-1"></i> Localizações Predeterminadas</span>
                     <span>Locais em Alerta <i class="fa-solid fa-circle text-red-500 ml-1"></i> (Pinos Vermelhos)</span>
                 </div>
             </div>
-            
+
             <div class="bg-green-100 p-6 rounded-3xl border border-green-300 shadow-xl flex flex-col">
                 <h3 class="text-xl font-black text-green-900 mb-4"><i class="fa-solid fa-bullhorn text-orange-500 mr-2"></i> Últimos Alertas</h3>
                 <div class="space-y-4 overflow-y-auto pr-2 h-[350px] custom-scrollbar">
@@ -265,59 +242,54 @@
             </div>
         </div>
 
-        <div class="mt-12 bg-gradient-to-br from-green-900 to-green-950 p-6 md:p-10 rounded-[2.5rem] shadow-xl border border-green-700">
-            <div class="inline-flex items-center gap-3 mb-8 md:mb-10 border-b-4 border-white/20 pb-4 w-full">
-                <i class="fa-solid fa-earth-americas text-yellow-400 text-3xl md:text-4xl drop-shadow-sm"></i>
+        <!-- INFORMAÇÃO QUE SALVA O PLANETA -->
+        <div class="mt-12 bg-gradient-to-br from-green-900 to-green-950 p-8 md:p-10 rounded-[2.5rem] shadow-xl border border-green-700">
+            <div class="inline-flex items-center gap-3 mb-10 border-b-4 border-white/20 pb-4 w-full">
+                <i class="fa-solid fa-earth-americas text-yellow-400 text-4xl drop-shadow-sm"></i>
                 <div>
-                    <h2 class="text-2xl md:text-4xl font-extrabold text-white tracking-tight drop-shadow-sm">Informação que Salva o Planeta</h2>
-                    <p class="text-sm md:text-base font-bold text-green-300 mt-1">Guia visual de descarte inteligente</p>
+                    <h2 class="text-3xl md:text-4xl font-extrabold text-white tracking-tight drop-shadow-sm">Informação que Salva o Planeta</h2>
+                    <p class="text-base font-bold text-green-300 mt-1">Guia visual de descarte inteligente</p>
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
-                <div class="bg-white p-5 md:p-6 rounded-3xl border-2 border-green-400 shadow-lg hover:shadow-xl transition duration-300">
-                    <h3 class="text-lg md:text-xl font-black text-green-800 mb-5 flex items-center gap-3">
-                        <i class="fa-solid fa-hourglass-half text-green-600"></i> Tempo de Decomposição
-                    </h3>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="bg-white p-6 rounded-3xl border-2 border-green-300 shadow-lg hover:shadow-xl transition duration-300">
+                    <h3 class="text-xl font-black text-green-800 mb-6 flex items-center gap-3"><i class="fa-solid fa-hourglass-half text-green-600"></i> Tempo de Decomposição</h3>
                     <ul class="space-y-3">
                         {% for tempo in tempos %}
-                        <li class="flex justify-between items-center bg-gray-50 p-3 rounded-xl border-2 border-gray-200 shadow-sm hover:border-green-400 transition">
-                            <span class="font-black text-gray-900 text-base">{{ tempo.material }}</span>
-                            <span class="font-black text-red-700 bg-red-100 border border-red-200 px-3 py-1 rounded-lg text-xs shadow-sm">{{ tempo.tempo }}</span>
+                        <li class="flex justify-between items-center bg-white p-3 rounded-xl border border-gray-100 shadow-sm hover:border-green-300 transition">
+                            <span class="font-bold text-gray-800 text-sm">{{ tempo.material }}</span>
+                            <span class="font-black text-red-600 bg-red-50 border border-red-100 px-3 py-1 rounded-lg text-xs shadow-sm">{{ tempo.tempo }}</span>
                         </li>
                         {% endfor %}
                     </ul>
                 </div>
 
-                <div class="bg-white p-5 md:p-6 rounded-3xl border-2 border-green-400 shadow-lg hover:shadow-xl transition duration-300">
-                    <h3 class="text-lg md:text-xl font-black text-green-900 mb-5 flex items-center gap-3">
-                        <i class="fa-solid fa-location-dot text-green-600"></i> Onde Descartar
-                    </h3>
+                <div class="bg-white p-6 rounded-3xl border-2 border-green-300 shadow-lg hover:shadow-xl transition duration-300">
+                    <h3 class="text-xl font-black text-green-900 mb-6 flex items-center gap-3"><i class="fa-solid fa-location-dot text-green-600"></i> Onde Descartar</h3>
                     <ul class="space-y-4">
                         {% for eco in ecopontos %}
-                        <li class="flex items-start gap-3 bg-gray-50 p-4 rounded-xl border-2 border-gray-200 shadow-sm hover:border-green-400 transition">
-                            <i class="fa-solid fa-map-pin text-green-600 mt-1 text-xl"></i>
+                        <li class="flex items-start gap-3 bg-white p-4 rounded-xl border border-gray-100 shadow-sm hover:border-green-300 transition">
+                            <i class="fa-solid fa-map-pin text-green-600 mt-1 text-lg"></i>
                             <div>
-                                <h4 class="font-black text-gray-900 text-base mb-1">{{ eco.nome }}</h4>
-                                <p class="text-sm font-bold text-gray-800 leading-snug">{{ eco.endereco }}</p>
+                                <h4 class="font-black text-gray-900 text-sm mb-1">{{ eco.nome }}</h4>
+                                <p class="text-xs font-bold text-gray-500 leading-snug">{{ eco.endereco }}</p>
                             </div>
                         </li>
                         {% endfor %}
                     </ul>
                 </div>
-                
+
                 <div class="bg-white p-6 rounded-3xl border-2 border-green-300 shadow-lg hover:shadow-xl transition duration-300">
                     <h3 class="text-xl font-black text-green-900 mb-4 flex items-center gap-3"><i class="fa-solid fa-recycle text-green-600"></i> Guia de Materiais</h3>
-                    
                     <div class="flex gap-4 mb-5 bg-white p-3 rounded-xl border border-gray-200 shadow-sm justify-center">
                         <div class="flex items-center gap-1.5 text-[11px] font-black text-green-800 uppercase tracking-wide"><i class="fa-solid fa-circle-check text-green-500 text-sm"></i> Reciclável</div>
                         <div class="flex items-center gap-1.5 text-[11px] font-black text-red-800 uppercase tracking-wide"><i class="fa-solid fa-circle-xmark text-red-500 text-sm"></i> Rejeito</div>
                     </div>
-
                     <div class="overflow-y-auto max-h-[250px] pr-2 custom-scrollbar space-y-6">
                         {% for cat in categorias %}
                         <div>
-                            <h4 class="font-black text-gray-800 text-sm uppercase tracking-widest mb-3 border-b border-gray-300 pb-1">{{ cat.nome }}</h4>
+                            <h4 class="font-black text-gray-400 text-xs uppercase tracking-widest mb-3 border-b border-gray-200 pb-1">{{ cat.nome }}</h4>
                             <div class="flex flex-wrap gap-2">
                                 {% for mat in cat.materiais.all %}
                                     <span class="text-[12px] font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5 border shadow-sm transition transform hover:-translate-y-0.5 {% if mat.is_reciclavel %}bg-green-100 border-green-400 text-green-900{% else %}bg-red-50 border-red-200 text-red-800{% endif %}">
@@ -332,8 +304,10 @@
                 </div>
             </div>
         </div>
+
     </main>
 
+    <!-- PARCEIROS -->
     <section class="max-w-5xl mx-auto px-6 py-8 mt-10 text-center bg-black/20 backdrop-blur-md rounded-3xl border border-white/20 shadow-lg mb-12">
         <h3 class="text-sm font-extrabold text-white uppercase tracking-widest mb-6 drop-shadow-md">Apoio Institucional e Parcerias</h3>
         <div class="flex justify-center gap-8 flex-wrap items-center">
@@ -347,17 +321,21 @@
         </div>
     </section>
 
+    <!-- FOOTER -->
     <footer class="bg-slate-900 mt-auto border-t border-green-800 py-8 relative w-full text-white">
         <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 items-center gap-6">
-            
+
             <div class="flex items-center gap-3 justify-center md:justify-start">
-                <img src="{% static 'painel/images/logo_recicla.png' %}" alt="Logo" class="w-10 h-10 rounded-full object-cover shadow-sm" onerror="this.style.display='none';">
-                <div class="text-left">
-                    <p class="font-extrabold text-sm text-green-400">Recicla & Educa</p>
-                    <p class="text-gray-400 text-xs font-medium">&copy; 2026 | Enactus UFMS | AGEAD/UFMS</p>
+                <img src="{% static 'painel/images/rani_sticker.png' %}" alt="Rani Mascote" class="h-16 w-auto object-contain drop-shadow-lg" onerror="this.style.display='none';">
+                <div class="flex items-center gap-2">
+                    <img src="{% static 'painel/images/logo_recicla.png' %}" alt="Logo" class="w-8 h-8 rounded-full object-cover shadow-sm" onerror="this.style.display='none';">
+                    <div class="text-left">
+                        <p class="font-extrabold text-sm text-green-400">Recicla & Educa</p>
+                        <p class="text-gray-400 text-xs font-medium">&copy; 2026 | Enactus UFMS | AGEAD/UFMS</p>
+                    </div>
                 </div>
             </div>
-            
+
             <div class="flex flex-col items-center justify-center text-center order-first md:order-none">
                 <a href="https://www.instagram.com/enagead/" target="_blank" class="text-gray-300 hover:text-green-400 transition flex items-center gap-2 mb-1.5 text-sm font-bold justify-center">
                     <i class="fa-brands fa-instagram text-lg text-emerald-500"></i> Enagead
@@ -366,18 +344,19 @@
                     Feito com <i class="fa-solid fa-heart text-yellow-400 mx-1"></i> para a comunidade.
                 </p>
             </div>
-            
+
             <div class="text-center md:text-right">
                 <p class="text-gray-500 text-[10px] uppercase tracking-widest font-black mb-1">Idealizado por</p>
                 <div class="font-bold text-sm text-green-400 flex items-center justify-center md:justify-end gap-2">
-                    <a href="https://www.instagram.com/geysa.log/" target="_blank" class="hover:text-white transition">@Geysa.log</a> 
-                    <span class="text-gray-500">&amp;</span> 
+                    <a href="https://www.instagram.com/geysa.log/" target="_blank" class="hover:text-white transition">@Geysa.log</a>
+                    <span class="text-gray-500">&amp;</span>
                     <a href="https://www.instagram.com/pedagojr/" target="_blank" class="hover:text-white transition">@Pedagojr</a>
                 </div>
             </div>
 
         </div>
     </footer>
+
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             const totalSlides = {{ slides|length|default:0 }};
@@ -419,7 +398,7 @@
             }
             updateCarousel(); resetInterval();
 
-            // GPS Funcional
+            // GPS
             const latInput = document.getElementById('latitude');
             const lngInput = document.getElementById('longitude');
             const gpsStatus = document.getElementById('gps-status');
@@ -438,7 +417,7 @@
                 );
             }
 
-            // Mapa Preditivo
+            // Mapa
             const rawData = '{{ mapa_dados_json|safe }}';
             const map = L.map('mapa').setView([-20.4697, -54.6201], 12);
             L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { maxZoom: 19 }).addTo(map);
@@ -451,23 +430,18 @@
                         html: `<div style='background-color:${color}; width:16px; height:16px; border-radius:50%; border:3px solid white; box-shadow: 0 0 8px ${shadow};'></div>`,
                         iconSize: [16, 16], iconAnchor: [8, 8]
                     });
-
                     let bounds = [];
                     locais.forEach(local => {
                         let dotIcon = createDot('#ef4444', '#ef4444');
                         if (local.urgencia === 'MEDIA' || local.urgencia === 'MÉDIA') dotIcon = createDot('#eab308', '#eab308');
-
                         L.marker([local.lat, local.lng], {icon: dotIcon}).addTo(map)
                          .bindPopup(`<strong>${local.endereco}</strong><br>Risco: <b>${local.urgencia}</b>`);
                         bounds.push([local.lat, local.lng]);
                     });
-
-                    if (bounds.length > 0) {
-                        map.fitBounds(bounds, {padding: [50, 50]});
-                    }
+                    if (bounds.length > 0) { map.fitBounds(bounds, {padding: [50, 50]}); }
                 } catch(e) { console.log(e) }
             }
         });
     </script>
-</body> 
+</body>
 </html>
