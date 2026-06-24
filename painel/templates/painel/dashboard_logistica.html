@@ -1,183 +1,198 @@
-
 {% load static %}
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal Visão Logística | Operação</title>
+    <title>Painel Gestor | Visão Cidadã</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: #000; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 4px; }
     </style>
 </head>
-<body class="bg-black min-h-screen text-gray-200 font-sans flex flex-col selection:bg-yellow-500 selection:text-black">
-
-    <header class="bg-gray-900 border-b border-gray-800 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <div class="bg-yellow-500 text-black w-10 h-10 rounded flex items-center justify-center font-black text-xl">
-                    <i class="fa-solid fa-truck-fast"></i>
-                </div>
-                <div>
-                    <h1 class="font-black text-xl text-white tracking-tight">Visão Logística</h1>
-                    <p class="text-[10px] text-yellow-500 font-black uppercase tracking-widest">Painel do Coletor</p>
-                </div>
-            </div>
-            
-            <div class="flex items-center gap-4">
-    <a href="{% url 'index' %}" class="bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded text-sm font-bold transition border border-gray-700">
-        <i class="fa-solid fa-house"></i> Site
-    </a>
-    <form method="post" action="{% url 'logout_direto' %}" class="m-0">
-        {% csrf_token %}
-        <button type="submit" class="bg-red-600 hover:bg-red-500 text-white px-4 py-2 rounded text-sm font-bold transition">
-            Sair <i class="fa-solid fa-right-from-bracket ml-1"></i>
-        </button>
-    </form>
-</div>
-        </div>
-    </header>
-
-    <main class="max-w-7xl mx-auto px-6 py-8 w-full flex-grow flex flex-col gap-8">
+<body class="bg-[#0b1120] text-gray-100 p-4 md:p-8 font-sans min-h-screen flex flex-col">
+    <div class="max-w-7xl mx-auto space-y-6 w-full flex-grow">
         
-        {% if messages %}
-            {% for message in messages %}
-                <div class="bg-green-500/20 border border-green-500 text-green-400 p-4 rounded-lg font-bold text-center">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endif %}
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="bg-gray-900 rounded-xl p-6 border border-gray-800 flex items-center gap-5">
-                <div class="bg-blue-600/20 text-blue-500 w-12 h-12 rounded-full flex items-center justify-center text-xl">
-                    <i class="fa-solid fa-route"></i>
-                </div>
-                <div>
-                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Fila Pendente</p>
-                    <h3 class="text-3xl font-black text-white">{{ reportes|length }}</h3>
-                </div>
+        <header class="flex justify-between items-center bg-[#111827] p-6 rounded-2xl border border-gray-800 shadow-lg">
+            <div>
+                <h1 class="text-2xl font-black text-white">Gestão Pública - Centro de Controle</h1>
+                <p class="text-gray-400 font-bold text-xs uppercase tracking-widest mt-1">Monitoramento Preditivo e Logística</p>
             </div>
-
-            <div class="bg-gray-900 rounded-xl p-6 border border-gray-800 flex items-center gap-5">
-                <div class="bg-green-600/20 text-green-500 w-12 h-12 rounded-full flex items-center justify-center text-xl">
-                    <i class="fa-solid fa-hand-holding-droplet"></i>
-                </div>
-                <div>
-                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Água Salva</p>
-                    <h3 class="text-3xl font-black text-white">{{ agua_preservada }}<span class="text-sm ml-1 text-gray-500">L</span></h3>
-                </div>
+            <div class="flex items-center gap-3">
+                <a href="{% url 'index' %}" class="bg-gray-800 hover:bg-gray-700 px-5 py-2 rounded-lg font-bold text-sm transition hidden sm:flex items-center"><i class="fa-solid fa-earth-americas mr-2"></i> Site Cidadão</a>
+                
+                <form method="post" action="{% url 'logout_direto' %}" class="m-0">
+                    {% csrf_token %}
+                    <button type="submit" class="bg-red-600 hover:bg-red-500 px-5 py-2 rounded-lg font-bold text-sm transition flex items-center"><i class="fa-solid fa-arrow-right-from-bracket mr-2"></i> Sair</button>
+                </form>
             </div>
+        </header>
 
-            <div class="bg-gray-900 rounded-xl p-6 border border-gray-800 flex items-center gap-5">
-                <div class="bg-yellow-600/20 text-yellow-500 w-12 h-12 rounded-full flex items-center justify-center text-xl">
-                    <i class="fa-solid fa-smog"></i>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="bg-[#111827] p-5 rounded-2xl border border-gray-800 shadow-sm">
+                <p class="text-[10px] uppercase text-gray-500 font-black">Demandas Pendentes</p>
+                <h2 class="text-4xl font-black text-white mt-2">{{ total_pendentes }}</h2>
+            </div>
+            <div class="bg-[#111827] p-5 rounded-2xl border border-gray-800 shadow-sm">
+                <p class="text-[10px] uppercase text-green-500 font-black">Problemas Resolvidos</p>
+                <h2 class="text-4xl font-black text-green-400 mt-2">{{ total_concluidos }}</h2>
+            </div>
+            <div class="bg-blue-900/20 p-5 rounded-2xl border border-blue-900/50 shadow-sm">
+                <p class="text-[10px] uppercase text-blue-400 font-black">Foco Crítico Histórico</p>
+                <h2 class="text-2xl font-black text-blue-200 mt-2">{{ regiao_critica }}</h2>
+            </div>
+            
+            <div class="bg-[#111827] p-5 rounded-2xl border border-gray-800 flex items-center justify-between relative overflow-hidden shadow-sm">
+                <div class="z-10">
+                    <p class="text-[10px] uppercase text-gray-500 font-black mb-1">Status da IA de Rota</p>
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-microchip text-yellow-500 text-xl drop-shadow-md"></i>
+                        <h2 class="text-lg font-black text-white">Otimizada</h2>
+                    </div>
                 </div>
-                <div>
-                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">CO2 Evitado</p>
-                    <h3 class="text-3xl font-black text-white">{{ co2_evitado }}<span class="text-sm ml-1 text-gray-500">kg</span></h3>
-                </div>
+                <img src="{% static 'painel/images/rani_ods.png' %}" alt="Rani IA" class="h-20 absolute -right-2 -bottom-2 opacity-90 hover:scale-105 transition-transform z-0" onerror="this.style.display='none';">
             </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 h-[600px]">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
             
-            <div class="lg:col-span-2 bg-gray-900 rounded-xl border border-gray-800 flex flex-col overflow-hidden">
-                <div class="p-4 border-b border-gray-800 flex justify-between items-center">
-                    <h2 class="font-black text-white flex items-center gap-2">
-                        <i class="fa-solid fa-map-location-dot text-blue-500"></i> Roteiro de Retirada
-                    </h2>
+            <div class="lg:col-span-2 space-y-6">
+                
+                <div class="bg-[#111827] p-5 rounded-2xl border border-gray-800 shadow-lg">
+                    <h3 class="font-black text-sm text-gray-300 mb-4 uppercase tracking-widest flex items-center"><i class="fa-solid fa-map-location-dot text-blue-500 mr-2"></i> Mapa Operacional de Vias e Demandas</h3>
+                    <div id="mapa" class="h-[400px] md:h-[550px] w-full rounded-xl z-0 border border-gray-700"></div>
                 </div>
-                <div id="mapa-logistica" class="w-full flex-grow bg-black z-0"></div>
-            </div>
 
-            <div class="bg-gray-900 rounded-xl border border-gray-800 flex flex-col overflow-hidden">
-                <div class="p-4 border-b border-gray-800">
-                    <h2 class="font-black text-white flex items-center gap-2">
-                        <i class="fa-solid fa-list-check text-yellow-500"></i> Operação Atual
-                    </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-[#111827] p-5 rounded-2xl border border-gray-800 shadow-sm">
+                        <h3 class="font-black text-sm text-gray-300 mb-4 uppercase tracking-widest">Distribuição de Urgência</h3>
+                        <div class="h-40 w-full"><canvas id="chartUrgencia"></canvas></div>
+                    </div>
+                    <div class="bg-[#111827] p-5 rounded-2xl border border-gray-800 shadow-sm">
+                        <h3 class="font-black text-sm text-gray-300 mb-4 uppercase tracking-widest">Acúmulo por Região</h3>
+                        <div class="h-40 w-full"><canvas id="chartRegiao"></canvas></div>
+                    </div>
                 </div>
                 
-                <div class="p-4 overflow-y-auto custom-scrollbar flex-grow space-y-4">
-                    {% for rep in reportes %}
-                    <div class="bg-black p-5 rounded-lg border border-gray-800 hover:border-gray-600 transition">
-                        
-                        <div class="flex justify-between items-start mb-3">
-                            <span class="text-[10px] font-black bg-yellow-500/10 text-yellow-500 px-2 py-1 rounded uppercase tracking-wider">
-                                {{ rep.status }}
-                            </span>
-                        </div>
-                        
-                        <h4 class="font-black text-white text-base mb-2">{{ rep.endereco }}</h4>
-                        
-                        <p class="text-xs text-gray-400 font-bold mb-4 line-clamp-3">
-                            <i class="fa-solid fa-robot text-gray-600 mr-1"></i> 
-                            {{ rep.analise_ia|default:"Aguardando análise..." }}
-                        </p>
+                <div class="bg-[#111827] p-5 rounded-2xl border border-gray-800 shadow-lg">
+                    <h3 class="font-black text-sm text-gray-300 mb-4 uppercase tracking-widest flex items-center"><i class="fa-solid fa-chart-line text-green-500 mr-2"></i> Evolução de Soluções</h3>
+                    <div class="h-48 w-full">
+                        <canvas id="chartResolvidos"></canvas>
+                    </div>
+                </div>
+            </div>
 
+            <div class="bg-[#111827] rounded-2xl border border-gray-800 shadow-lg overflow-hidden flex flex-col sticky top-24 max-h-[800px]">
+                <div class="p-5 border-b border-gray-800 bg-[#0f1523]">
+                    <h3 class="font-black text-sm text-gray-300 uppercase tracking-widest flex items-center"><i class="fa-solid fa-clipboard-list text-yellow-500 mr-2"></i> Comandas Ativas</h3>
+                </div>
+                <div class="p-4 space-y-4 overflow-y-auto custom-scrollbar flex-grow">
+                    {% for rep in reportes %}
+                    <div class="bg-[#1f2937] p-4 rounded-xl border border-gray-700 hover:border-blue-500 transition shadow-sm">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-[9px] font-black px-2 py-1 rounded-sm uppercase {% if rep.urgencia == 'ALTA' %}bg-red-900/50 text-red-400 border border-red-800{% elif rep.urgencia == 'MEDIA' %}bg-yellow-900/50 text-yellow-400 border border-yellow-800{% else %}bg-green-900/50 text-green-400 border border-green-800{% endif %}">
+                                URGÊNCIA: {{ rep.urgencia }}
+                            </span>
+                            <span class="text-[10px] font-bold text-gray-400">{{ rep.data_criacao|date:"d/m H:i" }}</span>
+                        </div>
+                        <h4 class="font-black text-white text-sm mb-1"><i class="fa-solid fa-map-pin text-gray-500 mr-1"></i> Região {{ rep.regiao }}</h4>
+                        <div class="bg-black/30 p-3 rounded-lg border border-gray-800 mb-4 mt-3">
+                            <p class="text-[10px] text-blue-300 font-black mb-1 uppercase tracking-wider"><i class="fa-solid fa-robot mr-1"></i> Análise Preditiva:</p>
+                            <p class="text-xs text-gray-300 leading-relaxed">{{ rep.analise_ia }}</p>
+                        </div>
                         <form method="POST">
                             {% csrf_token %}
                             <input type="hidden" name="reporte_id" value="{{ rep.id }}">
-                            <button type="submit" class="w-full bg-green-600 hover:bg-green-500 text-white font-black text-xs py-3 rounded transition uppercase tracking-widest">
-                                <i class="fa-solid fa-check mr-1"></i> Concluir Coleta
+                            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-black text-[10px] py-3 rounded-lg transition uppercase tracking-wider shadow-md">
+                                Confirmar Resolução
                             </button>
                         </form>
-                        
                     </div>
                     {% empty %}
-                    <div class="flex flex-col items-center justify-center h-full text-gray-600">
-                        <i class="fa-solid fa-mug-hot text-4xl mb-3"></i>
-                        <p class="font-black text-sm uppercase tracking-widest">Fila Limpa</p>
-                        <p class="text-xs font-bold">Nenhuma coleta no momento.</p>
+                    <div class="text-center py-12 text-gray-500 flex flex-col items-center">
+                        <i class="fa-solid fa-check-double text-4xl mb-3 text-gray-600"></i>
+                        <p class="text-xs font-black uppercase tracking-widest text-gray-400">Nenhuma pendência</p>
+                        <p class="text-[10px] mt-2 font-bold">A equipe de logística está com a fila limpa.</p>
                     </div>
                     {% endfor %}
                 </div>
             </div>
-
         </div>
-    </main>
+    </div>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const map = L.map('mapa-logistica').setView([-20.4697, -54.6201], 12); 
-            
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-                attribution: '&copy; CartoDB',
-                maxZoom: 19
-            }).addTo(map);
+        // Inicializar Mapa - Centralizado no Brasil/Campo Grande
+const map = L.map('mapa').setView([-20.4697, -54.6201], 14);
 
-            const markerIcon = L.divIcon({
-                className: 'custom-marker',
-                html: `<div class="bg-yellow-500 w-4 h-4 rounded-full border-2 border-black"></div>`,
-                iconSize: [16, 16],
-                iconAnchor: [8, 8]
-            });
+// Usando o servidor do Google Maps Híbrido (Satélite + Nomes das Ruas)
+L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
+    maxZoom: 20,
+    attribution: '© Google Maps'
+}).addTo(map);
 
-            let bounds = [];
+const locais = {{ mapa_json|safe }};
+let bounds = [];
 
-            {% for rep in reportes %}
-                {% if rep.latitude and rep.longitude %}
-                    L.marker([{{ rep.latitude|stringformat:"f" }}, {{ rep.longitude|stringformat:"f" }}], {icon: markerIcon})
-                     .addTo(map)
-                     .bindPopup(`
-                        <div class="text-black font-sans p-1">
-                            <h4 class="font-black text-sm mb-1">Ponto de Retirada</h4>
-                            <p class="text-xs font-bold">${"{{ rep.endereco }}".replace(/(<([^>]+)>)/gi, "")}</p>
-                        </div>
-                     `);
-                    bounds.push([{{ rep.latitude|stringformat:"f" }}, {{ rep.longitude|stringformat:"f" }}]);
-                {% endif %}
-            {% endfor %}
+// Ícone customizado de Alerta para o Mapa
+const iconeOcorrencia = L.divIcon({
+    className: 'custom-icon',
+    html: `<div style="background-color: #ef4444; width: 16px; height: 16px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.8);"></div>`,
+    iconSize: [16, 16],
+    iconAnchor: [8, 8]
+});
 
-            if (bounds.length > 0) {
-                map.fitBounds(bounds, {padding: [50, 50]});
-            }
+locais.forEach(l => { 
+    L.marker([l.lat, l.lng], {icon: iconeOcorrencia})
+     .addTo(map)
+     .bindPopup(`
+        <div style="font-family: sans-serif; padding: 2px;">
+            <strong style="color: #1f2937; font-size: 14px;">Demanda Logística</strong><br>
+            <span style="color: #4b5563; font-size: 12px; font-weight: bold;">📍 Região ${l.regiao}</span>
+        </div>
+     `); 
+    bounds.push([l.lat, l.lng]);
+});
+
+// Auto-ajuste e zoom nas ruas
+if (bounds.length > 0) {
+    map.fitBounds(bounds, {padding: [40, 40], maxZoom: 17});
+}
+
+        // Configurações Gráficos
+        Chart.defaults.color = '#9ca3af';
+        Chart.defaults.font.family = 'Inter, sans-serif';
+
+        new Chart(document.getElementById('chartUrgencia'), {
+            type: 'doughnut',
+            data: { labels: ['Alta', 'Média', 'Baixa'], datasets: [{ data: {{ urgencia_json|safe }}, backgroundColor: ['#ef4444', '#f59e0b', '#22c55e'], borderWidth: 0 }] },
+            options: { cutout: '70%', maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { boxWidth: 10 } } } }
+        });
+
+        new Chart(document.getElementById('chartRegiao'), {
+            type: 'bar',
+            data: { labels: ['Norte', 'Sul', 'Leste', 'Oeste', 'Centro'], datasets: [{ data: {{ regioes_json|safe }}, backgroundColor: '#3b82f6', borderRadius: 4 }] },
+            options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: '#374151' } }, x: { grid: { display: false } } } }
+        });
+
+        new Chart(document.getElementById('chartResolvidos'), {
+            type: 'line',
+            data: { 
+                labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'], 
+                datasets: [{ 
+                    label: 'Soluções',
+                    data: {{ resolvidos_meses_json|safe }}, 
+                    borderColor: '#10b981', 
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4
+                }] 
+            },
+            options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: '#374151' }, ticks: { stepSize: 1 } }, x: { grid: { display: false } } } }
         });
     </script>
 </body>

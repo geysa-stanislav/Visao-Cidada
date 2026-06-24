@@ -1,6 +1,5 @@
 from django.contrib import admin
-from .models import Reporte, Parceiro, SlideCarrossel, TempoDecomposicao, Ecoponto, CategoriaMaterial, Material
-
+from .models import Reporte, Parceiro, SlideCarrossel, TempoDecomposicao, CategoriaMaterial, Material, ColetaESG
 @admin.register(SlideCarrossel)
 class SlideCarrosselAdmin(admin.ModelAdmin):
     list_display = ('titulo', 'ativo', 'ordem')
@@ -9,10 +8,6 @@ class SlideCarrosselAdmin(admin.ModelAdmin):
 @admin.register(TempoDecomposicao)
 class TempoDecomposicaoAdmin(admin.ModelAdmin):
     list_display = ('material', 'tempo', 'ordem')
-
-@admin.register(Ecoponto)
-class EcopontoAdmin(admin.ModelAdmin):
-    list_display = ('nome', 'endereco')
 
 @admin.register(Parceiro)
 class ParceiroAdmin(admin.ModelAdmin):
@@ -37,3 +32,14 @@ class ReporteAdmin(admin.ModelAdmin):
     def ver_analise_resumida(self, obj):
         return obj.analise_ia[:50] + "..." if obj.analise_ia else "Sem análise"
     ver_analise_resumida.short_description = "Resumo IA"
+
+    # No seu painel/admin.py, adicione o ColetaESG no import:
+
+# Coloque isso no final do seu admin.py
+class ColetaESGAdmin(admin.ModelAdmin):
+    # Trava esses campos para o usuário não conseguir digitar (o sistema calcula sozinho)
+    readonly_fields = ('litros_agua_poupada', 'kg_co2_evitado', 'analise_ia')
+    # Opcional: Mostra mais colunas na listagem
+    list_display = ('nome_acao', 'empresa', 'kg_co2_evitado', 'litros_agua_poupada')
+
+admin.site.register(ColetaESG, ColetaESGAdmin)

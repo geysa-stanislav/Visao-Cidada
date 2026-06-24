@@ -1,49 +1,97 @@
+{% load static %}
 <!DOCTYPE html>
-<html lang="pt-pt">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Acesso Restrito - Recicla & Educa</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visão Cidadã | Login Administrativo</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            main: '#006B3E',      /* Verde Principal */
+                            sec: '#4A6B53',       /* Verde Secundário */
+                            light: '#E2F0D9',     /* Verde Claro */
+                            soft: '#EBF0EC',      /* Gelo Suave */
+                            cream: '#F4F1EA',     /* Creme Suave */
+                            dark: '#053B06',      /* Verde Floresta Negra */
+                            mustard: '#FFC72C',   /* Amarelo Mostarda */
+                            blue: '#2A4BC0'       /* Azul Vibrante */
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Fundo Azul com Quadradinhos (Grid Pattern) */
+        .bg-pattern {
+            background-color: #2A4BC0; /* O seu azul vibrante */
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+            background-size: 30px 30px;
+            background-position: center center;
+        }
+    </style>
 </head>
-<body class="bg-slate-900 h-screen flex items-center justify-center bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]">
-    
-    <div class="bg-slate-800 p-10 rounded-[2rem] shadow-2xl w-full max-w-md border-t-8 border-green-500">
-        <div class="text-center mb-8">
-            <h2 class="text-3xl font-black text-green-400"><i class="fa-solid fa-leaf"></i> Recicla & Educa</h2>
-            <p class="text-slate-300 font-bold mt-2">Portal de Gestão e Logística</p>
+<body class="bg-pattern min-h-screen flex flex-col justify-center items-center p-4 md:p-8 font-sans antialiased overflow-x-hidden overflow-y-auto relative">
+    <div class="absolute inset-0 bg-gradient-to-b from-transparent to-black/40 pointer-events-none"></div>
+
+    <div class="relative w-full max-w-md bg-brand-light/95 backdrop-blur-xl p-8 md:p-10 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] border-2 border-brand-main/20 flex flex-col justify-between min-h-[550px] md:min-h-[600px] z-10 transition-all duration-300">
+        
+        <div class="text-center flex flex-col items-center mb-6 mt-2">
+            <div class="flex items-center justify-center gap-3">
+                <h1 class="text-3xl md:text-4xl font-black text-brand-dark tracking-tight leading-none">Visão Cidadã</h1>
+                <div class="relative flex flex-col items-center justify-center w-8 h-8">
+                    <i class="fa-solid fa-seedling text-brand-main text-lg absolute -top-1 drop-shadow-sm"></i>
+                    <i class="fa-solid fa-book-open text-brand-blue text-xl absolute bottom-0 drop-shadow-sm"></i>
+                </div>
+            </div>
+            <p class="text-[11px] md:text-xs font-black text-gray-800 uppercase tracking-widest mt-2">Painel do Gestor</p>
         </div>
 
-        {% if form.errors %}
-            <div class="bg-red-500/20 border border-red-500 text-red-400 p-4 rounded-xl font-bold text-center mb-6 text-sm">
-                <i class="fa-solid fa-triangle-exclamation mr-2"></i> Utilizador ou senha incorretos. Verifique suas credenciais.
-            </div>
-        {% endif %}
-
-        <form method="post" class="space-y-6">
+        <form method="POST" class="space-y-5 my-auto">
             {% csrf_token %}
-            <input type="hidden" name="next" value="{{ next }}">
             
+            {% if form.errors %}
+                <div class="p-3 text-xs md:text-sm font-bold rounded-xl text-red-900 bg-red-100 border border-red-300 shadow-sm text-center">
+                    <i class="fa-solid fa-triangle-exclamation mr-1"></i> Usuário ou senha incorretos.
+                </div>
+            {% endif %}
+
             <div>
-                <label class="block text-slate-300 font-bold mb-2">Utilizador</label>
-                <input type="text" name="username" placeholder="Digite o seu utilizador..." class="w-full px-4 py-3 bg-slate-700 text-white border border-slate-600 rounded-xl focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/50 transition" required autofocus>
-            </div>
-            
-            <div>
-                <label class="block text-slate-300 font-bold mb-2">Senha</label>
-                <input type="password" name="password" placeholder="••••••••" class="w-full px-4 py-3 bg-slate-700 text-white border border-slate-600 rounded-xl focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/50 transition" required>
+                <label for="id_username" class="block text-brand-dark font-black text-sm md:text-base mb-2"><i class="fa-solid fa-user text-brand-main mr-2"></i> Usuário Administrativo</label>
+                <input type="text" name="username" autofocus required id="id_username" placeholder="Ex: gestao_publica" class="w-full border-2 border-brand-main/30 rounded-xl md:rounded-2xl bg-white shadow-inner p-3.5 md:p-4 text-sm md:text-base font-bold text-brand-dark placeholder-brand-sec/40 focus:outline-none focus:border-brand-blue transition focus:ring-4 focus:ring-brand-blue/20">
             </div>
 
-            <button type="submit" class="w-full bg-green-600 text-white font-black py-4 rounded-xl hover:bg-green-500 transition shadow-lg transform hover:-translate-y-1">
-                <i class="fa-solid fa-right-to-bracket mr-2"></i> ENTRAR NO SISTEMA
+            <div>
+                <label for="id_password" class="block text-brand-dark font-black text-sm md:text-base mb-2"><i class="fa-solid fa-lock text-brand-main mr-2"></i> Senha de Acesso</label>
+                <input type="password" name="password" required id="id_password" placeholder="••••••••" class="w-full border-2 border-brand-light/30 rounded-xl md:rounded-2xl bg-white shadow-inner p-3.5 md:p-4 text-sm md:text-base font-bold text-brand-dark placeholder-brand-sec/40 focus:outline-none focus:border-brand-blue transition focus:ring-4 focus:ring-brand-blue/20">
+            </div>
+
+            <button type="submit" class="w-full mt-4 bg-brand-blue text-white font-black text-lg md:text-xl py-4 rounded-xl md:rounded-2xl shadow-xl hover:bg-blue-800 transition transform hover:-translate-y-0.5 border-b-4 border-blue-900 active:border-b-0 active:translate-y-0.5 flex items-center justify-center gap-3">
+                <i class="fa-solid fa-right-to-bracket text-brand-mustard text-lg md:text-xl"></i> Entrar no Painel
             </button>
         </form>
 
-        <div class="mt-8 text-center">
-            <a href="{% url 'index' %}" class="text-sm font-bold text-slate-400 hover:text-green-400 transition">
-                <i class="fa-solid fa-arrow-left"></i> Voltar ao Portal do Cidadão
-            </a>
+        <div class="flex justify-center mb-4 md:mb-6">
+            <img src="{% static 'painel/images/rani_sticker.png' %}" alt="Rani Mascote" class="h-28 sm:h-36 md:h-44 w-auto object-contain drop-shadow-xl hover:scale-105 transition-transform duration-300 transform -translate-x-8 md:-translate-x-12" onerror="this.style.display='none';">
         </div>
+        <div class="text-center border-t border-brand-main/20 pt-5 mt-2">
+            <a href="/" class="text-xs md:text-sm font-black text-brand-main hover:text-brand-dark transition flex items-center justify-center gap-2">
+                <i class="fa-solid fa-arrow-left"></i> Voltar para o Início
+            </a>
+            <p class="text-[10px] text-gray-800 font-bold mt-3 uppercase tracking-wider">&copy; 2026 | Enactus | AGEAD | UFMS</p>
+        </div>
+
     </div>
 
 </body>
