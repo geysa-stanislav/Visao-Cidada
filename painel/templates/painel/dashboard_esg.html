@@ -73,6 +73,28 @@
 
         <div class="bg-[#1e293b] p-6 rounded-xl border border-gray-700 shadow-lg shadow-black/20">
             <h3 class="font-black text-xs text-yellow-500 mb-6 flex items-center"><i class="fa-solid fa-bullseye mr-2"></i> Progresso das Metas ESG</h3>
+
+            <div class="bg-[#1e293b] p-6 rounded-xl border border-gray-700 shadow-lg shadow-black/20 mt-6">
+    <h3 class="font-black text-xs text-white mb-4 uppercase"><i class="fa-solid fa-plus mr-2"></i> Registrar Nova Coleta</h3>
+    <form method="POST" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {% csrf_token %}
+        
+        <div>
+            <label class="text-[10px] uppercase font-bold text-gray-400">Data da Ação</label>
+            <input type="date" name="data_coleta" class="w-full bg-[#0f172a] border border-gray-700 rounded-md p-2 text-sm text-white" required>
+        </div>
+
+        <div>
+            <label class="text-[10px] uppercase font-bold text-gray-400">Nome da Ação</label>
+            <input type="text" name="nome_acao" class="w-full bg-[#0f172a] border border-gray-700 rounded-md p-2 text-sm text-white" placeholder="Ex: Coleta Seletiva Mensal" required>
+        </div>
+
+        <div class="flex items-end">
+            <button type="submit" class="w-full bg-[#10b981] hover:bg-[#059669] text-white font-bold py-2 rounded-md transition">Registrar Dados</button>
+        </div>
+
+        </form>
+</div>
             
             <div class="space-y-6">
                 <div>

@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-
+from django.utils import timezone
 # --- SEÇÃO DE SLIDES E PARCEIROS ---
 class SlideCarrossel(models.Model):
     titulo = models.CharField(max_length=200)
@@ -83,7 +83,8 @@ class ColetaESG(models.Model):
     empresa = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Empresa Parceira")
     nome_acao = models.CharField(max_length=200, default="Drive-Thru da Sustentabilidade", verbose_name="Nome do Evento/Ação")
     data_acao = models.DateField(verbose_name="Data da Ação", auto_now_add=True)
-    
+    data_coleta = models.DateTimeField(default=timezone.now, verbose_name="Data da Ação")
+  
     # Entradas (A empresa/você só digita isso)
     kg_plastico = models.FloatField(default=0, verbose_name="Plástico (kg)")
     kg_vidro = models.FloatField(default=0, verbose_name="Vidro (kg)")

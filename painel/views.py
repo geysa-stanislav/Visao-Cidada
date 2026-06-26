@@ -139,36 +139,69 @@ def dashboard_gestor(request):
         
     else:
         # --- LÓGICA DO DASHBOARD ESG (EMPRESAS PRIVADA) ---
+        from django.db.models import Sum
+        from datetime import datetime
+
+        # 1. Se estiver enviando uma nova coleta via formulário
+        if request.method == 'POST' and 'litros_agua_poupada' in request.POST:
+            # Captura a data do formulário. Se estiver vazio, usa a data de hoje.
+            data_str = request.POST.get('data_coleta')
+            data_coleta = datetime.strptime(data_str, '%Y-%m-%d') if data_str else datetime.now()
+            
+            # Aqui você deve criar o objeto usando a data_coleta capturada
+            # Certifique-se de que os nomes dos campos batem com seu models.py
+            ColetaESG.objects.create(
+                empresa=usuario,
+                data_coleta=data_coleta,
+                litros_agua_poupada=request.POST.get('litros_agua_poupada'),
+                kg_co2_evitado=request.POST.get('kg_co2_evitado'),
+                kg_plastico=request.POST.get('kg_plastico'),
+                kg_vidro=request.POST.get('kg_vidro'),
+                kg_papel=request.POST.get('kg_papel'),
+                kg_metal=request.POST.get('kg_metal'),
+                kg_organico=request.POST.get('kg_organico'),
+                nome_acao=request.POST.get('nome_acao')
+            )
+            return redirect('dashboard') # Recarrega para limpar o POST
+
+        # 2. Lógica de consulta para o Dashboard
         coletas_empresa = ColetaESG.objects.filter(empresa=usuario)
         
-        total_agua = sum(c.litros_agua_poupada for c in coletas_empresa)
-        total_co2 = sum(c.kg_co2_evitado for c in coletas_empresa)
+        totais = coletas_empresa.aggregate(
+            agua=Sum('litros_agua_poupada'),
+            co2=Sum('kg_co2_evitado'),
+            plastico=Sum('kg_plastico'),
+            vidro=Sum('kg_vidro'),
+            papel=Sum('kg_papel'),
+            metal=Sum('kg_metal'),
+            organico=Sum('kg_organico')
+        )
         
-        # Puxando todos os 5 materiais
-        total_plastico = sum(c.kg_plastico for c in coletas_empresa)
-        total_vidro = sum(c.kg_vidro for c in coletas_empresa)
-        total_papel = sum(c.kg_papel for c in coletas_empresa)
-        total_metal = sum(c.kg_metal for c in coletas_empresa)
-        total_organico = sum(c.kg_organico for c in coletas_empresa)
+        # 3. Dados por mês (Para o gráfico)
+        dados_por_mes = [0] * 12
+        for c in coletas_empresa:
+            if c.data_coleta:
+                # Pega o mês (1 a 12) e subtrai 1 para o índice da lista (0 a 11)
+                mes_index = c.data_coleta.month - 1
+                dados_por_mes[mes_index] += 1
         
-        total_acoes = coletas_empresa.count()
-        dados_meses = [0, 0, 0, 0, 0, total_acoes] 
-        
-        progresso_agua = min((total_agua / 1000) * 100, 100) if total_agua else 0
-        progresso_co2 = min((total_co2 / 50) * 100, 100) if total_co2 else 0
-
-        ultima_acao = coletas_empresa.order_by('-id').first()
-        texto_ia = ultima_acao.analise_ia if ultima_acao else "Aguardando primeiro evento para gerar análise."
+        ultima_acao = coletas_empresa.order_by('-data_coleta').first()
+        texto_ia = ultima_acao.analise_ia if ultima_acao else "Aguardando primeiro evento."
 
         contexto_esg = {
-            'agua_preservada': total_agua,
-            'co2_evitado': total_co2,
-            'total_coletas': total_acoes,
-            'dados_meses': json.dumps(dados_meses),
-            # Enviamos os 5 materiais pro HTML
-            'materiais_json': json.dumps([total_plastico, total_vidro, total_papel, total_metal, total_organico]),
-            'progresso_agua': str(progresso_agua).replace(',', '.'),
-            'progresso_co2': str(progresso_co2).replace(',', '.'),
+            'agua_preservada': totais['agua'] or 0,
+            'co2_evitado': totais['co2'] or 0,
+            'total_coletas': coletas_empresa.count(),
+            'dados_meses': json.dumps(dados_por_mes),
+            'materiais_json': json.dumps([
+                totais['plastico'] or 0, 
+                totais['vidro'] or 0, 
+                totais['papel'] or 0, 
+                totais['metal'] or 0, 
+                totais['organico'] or 0
+            ]),
+            'progresso_agua': min(((totais['agua'] or 0) / 1000) * 100, 100),
+            'progresso_co2': min(((totais['co2'] or 0) / 50) * 100, 100),
             'texto_ia': texto_ia,
         }
         return render(request, 'painel/dashboard_esg.html', contexto_esg)
