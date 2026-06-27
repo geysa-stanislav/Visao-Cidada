@@ -1,6 +1,6 @@
 # 🌍 Visão Cidadã - Plataforma ESG e Logística Preditiva
 
-Plataforma desenvolvida durante o **Hackathon Visão Cidadã**, promovido pelo time **Enactus AGEAD UFMS**. O sistema atua como uma solução digital para o mapeamento de descarte irregular de resíduos e gestão de impacto ambiental (ESG).
+Plataforma desenvolvida durante o **Hackathon Núcleo de Formação Cidadã UFMS**, promovido pelo time **Enactus AGEAD UFMS**. O sistema atua como uma solução digital para o mapeamento de descarte irregular de resíduos e gestão de impacto ambiental (ESG).
 
 ## 🚀 Funcionalidades Principais
 
