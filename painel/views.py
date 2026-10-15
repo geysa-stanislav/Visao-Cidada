@@ -3,9 +3,19 @@ from django.contrib import messages
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from .models import Reporte, Parceiro, SlideCarrossel, TempoDecomposicao, CategoriaMaterial, Material,ColetaESG
+from .ia import analisar_reporte
 import json
 from datetime import datetime
 
+NOMES_CATEGORIA = {
+    'LIXO_ACUMULADO': 'Lixo acumulado',
+    'DESCARTE_IRREGULAR': 'Descarte irregular',
+    'TERRENO_BALDIO': 'Terreno baldio',
+    'AGUA_PARADA': 'Água parada',
+    'ENTULHO': 'Entulho',
+    'QUEIMADA': 'Queimada',
+    'OUTRO': 'Outro',
+}
 # 1. FUNÇÃO AUXILIAR (Definida no topo para ficar disponível para todos)
 def get_regiao_simples(lat, lng):
     try:
@@ -42,15 +52,30 @@ def index(request):
         longitude = request.POST.get('longitude', '')
         
         if foto and endereco:
-            nivel_urgencia = calcular_urgencia_dinamica(observacoes, datetime.now().month)
+            # Tenta a IA (só lê o texto da descrição). Se falhar, devolve None.
+            analise = None
+            if observacoes and observacoes != 'Sem observações.':
+                analise = analisar_reporte(observacoes, endereco)
+
+            if analise:
+                nivel_urgencia = analise['urgencia']
+                categoria_legivel = NOMES_CATEGORIA.get(analise['categoria'], 'Outro')
+                texto_analise = f"IA ({categoria_legivel}): {analise['orientacao']}"
+            else:
+                # Plano B: as regras antigas continuam funcionando
+                nivel_urgencia = calcular_urgencia_dinamica(observacoes, datetime.now().month)
+                texto_analise = f"Classificação por regras (urgência {nivel_urgencia}), com base em palavras-chave e época do ano."
+
             reporte = Reporte.objects.create(
                 endereco=endereco, foto=foto, observacoes=observacoes,
                 latitude=latitude, longitude=longitude, tipo='IRREGULARIDADE',
-                urgencia=nivel_urgencia, projeto_nome='Visão Cidadã' 
+                urgencia=nivel_urgencia, projeto_nome='Visão Cidadã',
+                analise_ia=texto_analise
             )
-            reporte.analise_ia = f"IA: Reporte classificado como {nivel_urgencia} com base na sazonalidade."
-            reporte.save()
-            messages.success(request, "Reporte enviado!")
+            if analise and analise['orientacao']:
+                messages.success(request, f"Reporte enviado! Orientação da IA: {analise['orientacao']}")
+            else:
+                messages.success(request, "Reporte enviado!")
             return redirect('index')
 
     # 1. Definimos a variável ANTES do loop
@@ -106,8 +131,8 @@ def dashboard_gestor(request):
             regiao = get_regiao_simples(r.latitude, r.longitude)
             regioes_contagem[regiao] += 1
             
-            u = r.urgencia.capitalize() if r.urgencia else "Baixa"
-            urgencia_contagem[u] = urgencia_contagem.get(u, 0) + 1
+            u = {'ALTA': 'Alta', 'MEDIA': 'Média', 'BAIXA': 'Baixa'}.get(r.urgencia, 'Baixa')
+            urgencia_contagem[u] += 1
             
             if r.status == 'CONCLUIDO' and r.data_criacao:
                 mes_index = r.data_criacao.month - 1
@@ -117,9 +142,13 @@ def dashboard_gestor(request):
         for f in fila:
             regiao = get_regiao_simples(f.latitude, f.longitude)
             f.regiao = regiao
+            try:
+                lat_f, lng_f = float(f.latitude), float(f.longitude)
+            except (TypeError, ValueError):
+                continue  # reporte sem GPS fica na lista, mas não vai para o mapa
             mapa_dados.append({
-                "lat": float(f.latitude) + 0.0001,
-                "lng": float(f.longitude) + 0.0001,
+                "lat": lat_f + 0.0001,
+                "lng": lng_f + 0.0001,
                 "regiao": regiao
             })
 
@@ -177,13 +206,24 @@ def dashboard_gestor(request):
             organico=Sum('kg_organico')
         )
         
-        # 3. Dados por mês (Para o gráfico)
-        dados_por_mes = [0] * 12
+        # 3. Ações dos últimos 6 meses (para o gráfico)
+        NOMES_MESES = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun',
+                       'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
+        hoje = datetime.now()
+        ano, mes = hoje.year, hoje.month
+        meses = []
+        for _ in range(6):
+            meses.append((ano, mes))
+            mes -= 1
+            if mes == 0:
+                mes, ano = 12, ano - 1
+        meses.reverse()
+        contagem = {m: 0 for m in meses}
         for c in coletas_empresa:
-            if c.data_coleta:
-                # Pega o mês (1 a 12) e subtrai 1 para o índice da lista (0 a 11)
-                mes_index = c.data_coleta.month - 1
-                dados_por_mes[mes_index] += 1
+            if c.data_coleta and (c.data_coleta.year, c.data_coleta.month) in contagem:
+                contagem[(c.data_coleta.year, c.data_coleta.month)] += 1
+        labels_meses = [NOMES_MESES[m - 1] for (a, m) in meses]
+        dados_por_mes = [contagem[m] for m in meses]
         
         ultima_acao = coletas_empresa.order_by('-data_coleta').first()
         texto_ia = ultima_acao.analise_ia if ultima_acao else "Aguardando primeiro evento."
@@ -193,6 +233,7 @@ def dashboard_gestor(request):
             'co2_evitado': totais['co2'] or 0,
             'total_coletas': coletas_empresa.count(),
             'dados_meses': json.dumps(dados_por_mes),
+            'labels_meses': json.dumps(labels_meses),
             'materiais_json': json.dumps([
                 totais['plastico'] or 0, 
                 totais['vidro'] or 0, 
