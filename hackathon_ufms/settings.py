@@ -5,10 +5,17 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # CHAVE DE SEGURANÇA (Necessária para o Django iniciar)
-SECRET_KEY = 'django-insecure-hacker-hackathon-2026-fix'
-DEBUG = True
-ALLOWED_HOSTS = ['*']
-
+CHAVE_ARQUIVO = '/home/VisaoCidada/secret_key.txt'
+if os.path.exists(CHAVE_ARQUIVO):
+    # Servidor: chave lida de um arquivo fora do projeto e modo de producao
+    with open(CHAVE_ARQUIVO) as f:
+        SECRET_KEY = f.read().strip()
+    DEBUG = False
+else:
+    # Computador local: chave so de testes e modo de desenvolvimento
+    SECRET_KEY = 'chave-apenas-para-testes-locais'
+    DEBUG = True
+ALLOWED_HOSTS = ['visaocidada.pythonanywhere.com', 'localhost', '127.0.0.1']
 # Aplicações instaladas
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -17,7 +24,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'painel', 
+    'painel',
 ]
 
 MIDDLEWARE = [
@@ -67,9 +74,12 @@ STATICFILES_DIRS = [BASE_DIR / 'painel' / 'static']
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # REDIRECIONAMENTOS DE AUTENTICAÇÃO (SaaS)
 LOGOUT_REDIRECT_URL = 'index'
-
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # CHAVE DO GROQ (Onde a mágica acontece)
 OPENAI_API_KEY = ""
 LOGIN_REDIRECT_URL = '/dashboard/'
 LOGOUT_REDIRECT_URL = '/'
-LOGIN_URL = 'login' 
+LOGIN_URL = 'login'
