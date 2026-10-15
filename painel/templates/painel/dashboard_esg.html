@@ -70,7 +70,7 @@
                 <p class="text-[10px] text-gray-400 mt-4 text-center">Plástico, Vidro, Papel, Metal e Orgânico arrecadados (kg).</p>
             </div>
         </div>
-
+       {% comment %}
         <div class="bg-[#1e293b] p-6 rounded-xl border border-gray-700 shadow-lg shadow-black/20">
             <h3 class="font-black text-xs text-yellow-500 mb-6 flex items-center"><i class="fa-solid fa-bullseye mr-2"></i> Progresso das Metas ESG</h3>
 
@@ -118,15 +118,16 @@
                 </div>
             </div>
         </div>
+        {% endcomment %}
 <!-- RELATÓRIO ANALÍTICO DE IMPACTO COM A RANI -->
        <div class="bg-gradient-to-r from-[#1e293b] to-[#0f172a] p-6 rounded-xl border border-gray-700 shadow-lg shadow-black/20 flex flex-col md:flex-row items-center relative overflow-hidden mt-6">
             <div class="z-10 w-full md:w-3/4 pr-4">
-                <h3 class="font-black text-xs text-blue-400 mb-3 uppercase tracking-widest"><i class="fa-solid fa-robot mr-2"></i> Relatório Analítico de Impacto (Gerado por IA)</h3>
+                <h3 class="font-black text-xs text-blue-400 mb-3 uppercase tracking-widest"><i class="fa-solid fa-file-lines mr-2"></i> Relatório de Impacto (gerado automaticamente a partir dos dados)</h3>
                 <p class="text-sm text-gray-300 leading-relaxed italic border-l-2 border-[#10b981] pl-3">"{{ texto_ia|safe }}"</p>
             </div>
             
             <div class="hidden md:flex w-1/4 justify-end absolute right-4 -bottom-1 z-10">
-                <img src="{% static 'painel/images/rani_ods.png' %}" alt="Rani IA" class="h-32 drop-shadow-2xl hover:scale-105 transition-transform" onerror="this.style.display='none';">
+                <img src="{% static 'painel/images/rani_ods.png' %}" alt="Rani, a mascote do projeto" class="h-32 drop-shadow-2xl hover:scale-105 transition-transform" onerror="this.style.display='none';">
             </div>
 
             <i class="fa-solid fa-microchip absolute right-32 -bottom-4 text-8xl text-blue-500/5 z-0"></i>
@@ -140,7 +141,7 @@
         new Chart(document.getElementById('chartEvolucao'), {
             type: 'bar',
             data: {
-                labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
+                labels: {{ labels_meses|safe }},
                 datasets: [{
                     label: 'Ações Registradas',
                     data: {{ dados_meses|safe }},

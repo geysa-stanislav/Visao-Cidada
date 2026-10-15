@@ -3,7 +3,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Painel Gestor | Visão Cidadã</title>
+    <title>Painel de Reportes - Centro de Controle | Visão Cidadã</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -19,8 +19,8 @@
         
         <header class="flex justify-between items-center bg-[#111827] p-6 rounded-2xl border border-gray-800 shadow-lg">
             <div>
-                <h1 class="text-2xl font-black text-white">Gestão Pública - Centro de Controle</h1>
-                <p class="text-gray-400 font-bold text-xs uppercase tracking-widest mt-1">Monitoramento Preditivo e Logística</p>
+                <h1 class="text-2xl font-black text-white">Painel de Reportes - Centro de Controle</h1>
+                <p class="text-gray-400 font-bold text-xs uppercase tracking-widest mt-1">Monitoramento dos reportes</p>
             </div>
             <div class="flex items-center gap-3">
                 <a href="{% url 'index' %}" class="bg-gray-800 hover:bg-gray-700 px-5 py-2 rounded-lg font-bold text-sm transition hidden sm:flex items-center"><i class="fa-solid fa-earth-americas mr-2"></i> Site Cidadão</a>
@@ -48,10 +48,10 @@
             
             <div class="bg-[#111827] p-5 rounded-2xl border border-gray-800 flex items-center justify-between relative overflow-hidden shadow-sm">
                 <div class="z-10">
-                    <p class="text-[10px] uppercase text-gray-500 font-black mb-1">Status da IA de Rota</p>
+                                     <p class="text-[10px] uppercase text-gray-500 font-black mb-1">Triagem dos Reportes</p>
                     <div class="flex items-center gap-2">
                         <i class="fa-solid fa-microchip text-yellow-500 text-xl drop-shadow-md"></i>
-                        <h2 class="text-lg font-black text-white">Otimizada</h2>
+                        <h2 class="text-lg font-black text-white">IA + Regras</h2>
                     </div>
                 </div>
                 <img src="{% static 'painel/images/rani_ods.png' %}" alt="Rani IA" class="h-20 absolute -right-2 -bottom-2 opacity-90 hover:scale-105 transition-transform z-0" onerror="this.style.display='none';">
@@ -63,7 +63,7 @@
             <div class="lg:col-span-2 space-y-6">
                 
                 <div class="bg-[#111827] p-5 rounded-2xl border border-gray-800 shadow-lg">
-                    <h3 class="font-black text-sm text-gray-300 mb-4 uppercase tracking-widest flex items-center"><i class="fa-solid fa-map-location-dot text-blue-500 mr-2"></i> Mapa Operacional de Vias e Demandas</h3>
+                    <h3 class="font-black text-sm text-gray-300 mb-4 uppercase tracking-widest flex items-center"><i class="fa-solid fa-map-location-dot text-blue-500 mr-2"></i> Mapa dos Reportes</h3>
                     <div id="mapa" class="h-[400px] md:h-[550px] w-full rounded-xl z-0 border border-gray-700"></div>
                 </div>
 
@@ -88,7 +88,7 @@
 
             <div class="bg-[#111827] rounded-2xl border border-gray-800 shadow-lg overflow-hidden flex flex-col sticky top-24 max-h-[800px]">
                 <div class="p-5 border-b border-gray-800 bg-[#0f1523]">
-                    <h3 class="font-black text-sm text-gray-300 uppercase tracking-widest flex items-center"><i class="fa-solid fa-clipboard-list text-yellow-500 mr-2"></i> Comandas Ativas</h3>
+                    <h3 class="font-black text-sm text-gray-300 uppercase tracking-widest flex items-center"><i class="fa-solid fa-clipboard-list text-yellow-500 mr-2"></i> Reportes Pendentes</h3>
                 </div>
                 <div class="p-4 space-y-4 overflow-y-auto custom-scrollbar flex-grow">
                     {% for rep in reportes %}
@@ -101,7 +101,7 @@
                         </div>
                         <h4 class="font-black text-white text-sm mb-1"><i class="fa-solid fa-map-pin text-gray-500 mr-1"></i> Região {{ rep.regiao }}</h4>
                         <div class="bg-black/30 p-3 rounded-lg border border-gray-800 mb-4 mt-3">
-                            <p class="text-[10px] text-blue-300 font-black mb-1 uppercase tracking-wider"><i class="fa-solid fa-robot mr-1"></i> Análise Preditiva:</p>
+                            <p class="text-[10px] text-blue-300 font-black mb-1 uppercase tracking-wider"><i class="fa-solid fa-robot mr-1"></i> Análise do Reporte:</p>
                             <p class="text-xs text-gray-300 leading-relaxed">{{ rep.analise_ia }}</p>
                         </div>
                         <form method="POST">
@@ -116,7 +116,7 @@
                     <div class="text-center py-12 text-gray-500 flex flex-col items-center">
                         <i class="fa-solid fa-check-double text-4xl mb-3 text-gray-600"></i>
                         <p class="text-xs font-black uppercase tracking-widest text-gray-400">Nenhuma pendência</p>
-                        <p class="text-[10px] mt-2 font-bold">A equipe de logística está com a fila limpa.</p>
+                        <p class="text-[10px] mt-2 font-bold">Nenhum reporte pendente.</p>
                     </div>
                     {% endfor %}
                 </div>
@@ -150,7 +150,7 @@ locais.forEach(l => {
      .addTo(map)
      .bindPopup(`
         <div style="font-family: sans-serif; padding: 2px;">
-            <strong style="color: #1f2937; font-size: 14px;">Demanda Logística</strong><br>
+            <strong style="color: #1f2937; font-size: 14px;">Reporte</strong><br>
             <span style="color: #4b5563; font-size: 12px; font-weight: bold;">📍 Região ${l.regiao}</span>
         </div>
      `); 
